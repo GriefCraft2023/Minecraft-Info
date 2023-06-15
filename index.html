@@ -28,7 +28,7 @@
       const question = questionInput.value;
 
       const answer = await getAnswerFromChatGPT(question);
-      answerDiv.textContent = answer;
+      answerDiv.innerHTML = answer;
     });
 
     async function getAnswerFromChatGPT(question) {
