@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Получение информации о сервере Minecraft</title>
+    <script>
+        function getInfo() {
+            var ip = document.getElementById("ip").value;
+            var url = "https://api.mcsrvstat.us/2/" + ip; // Замените на соответствующий API-URL
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Обработка полученной информации и ее отображение на странице
+                    var serverInfo = document.getElementById("serverInfo");
+                    serverInfo.innerHTML = "<strong>Имя сервера:</strong> " + data.hostname + "<br>";
+                    serverInfo.innerHTML += "<strong>IP-адрес:</strong> " + data.ip + "<br>";
+                    serverInfo.innerHTML += "<strong>Версия:</strong> " + data.version + "<br>";
+                    serverInfo.innerHTML += "<strong>Игроки онлайн:</strong> " + data.players.online + "/" + data.players.max + "<br>";
+                    serverInfo.innerHTML += "<strong>Мотд:</strong> " + data.motd.clean.join("<br>") + "<br>";
+                    serverInfo.innerHTML += "<strong>Описание:</strong> " + data.description.text + "<br>";
+                    serverInfo.innerHTML += "<strong>Онлайн-игроки:</strong><br>";
+                    data.players.list.forEach(player => {
+                        serverInfo.innerHTML += player + "<br>";
+                    });
+                })
+                .catch(error => {
+                    console.error("Ошибка при получении информации о сервере:", error);
+                    var serverInfo = document.getElementById("serverInfo");
+                    serverInfo.innerHTML = "Ошибка при получении информации о сервере.";
+                });
+        }
+    </script>
+</head>
+<body>
+    <h1>Получение информации о сервере Minecraft</h1>
+    <input type="text" id="ip" placeholder="Введите IP-адрес сервера">
+    <button onclick="getInfo()">Получить информацию</button>
+    <div id="serverInfo"></div>
+</body>
+</html>
