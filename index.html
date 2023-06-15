@@ -1,40 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Получение информации о сервере Minecraft</title>
-    <script>
-        function getInfo() {
-            var ip = document.getElementById("ip").value;
-            var url = "https://api.mcsrvstat.us/2/" + ip; // Замените на соответствующий API-URL
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    // Обработка полученной информации и ее отображение на странице
-                    var serverInfo = document.getElementById("serverInfo");
-                    serverInfo.innerHTML = "<strong>Имя сервера:</strong> " + data.hostname + "<br>";
-                    serverInfo.innerHTML += "<strong>IP-адрес:</strong> " + data.ip + "<br>";
-                    serverInfo.innerHTML += "<strong>Версия:</strong> " + data.version + "<br>";
-                    serverInfo.innerHTML += "<strong>Игроки онлайн:</strong> " + data.players.online + "/" + data.players.max + "<br>";
-                    serverInfo.innerHTML += "<strong>Мотд:</strong> " + data.motd.clean.join("<br>") + "<br>";
-                    serverInfo.innerHTML += "<strong>Описание:</strong> " + data.description.text + "<br>";
-                    serverInfo.innerHTML += "<strong>Онлайн-игроки:</strong><br>";
-                    data.players.list.forEach(player => {
-                        serverInfo.innerHTML += player + "<br>";
-                    });
-                })
-                .catch(error => {
-                    console.error("Ошибка при получении информации о сервере:", error);
-                    var serverInfo = document.getElementById("serverInfo");
-                    serverInfo.innerHTML = "Ошибка при получении информации о сервере.";
-                });
-        }
-    </script>
+  <title>Задайте вопрос OpenAI</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <h1>Получение информации о сервере Minecraft</h1>
-    <input type="text" id="ip" placeholder="Введите IP-адрес сервера">
-    <button onclick="getInfo()">Получить информацию</button>
-    <div id="serverInfo"></div>
+  <h1>Задайте вопрос OpenAI</h1>
+
+  <form id="question-form">
+    <label for="question">Ваш вопрос:</label>
+    <input type="text" id="question" name="question" required>
+    <br>
+    <button type="submit">Отправить</button>
+  </form>
+
+  <h2>Ответ:</h2>
+  <div id="answer"></div>
+
+  <script>
+    const form = document.getElementById('question-form');
+    const answerDiv = document.getElementById('answer');
+    const apiKey = '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';
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const questionInput = document.getElementById('question');
+      const question = questionInput.value;
+
+      const response = await getAnswerFromOpenAI(question, apiKey);
+
+      answerDiv.textContent = response.data.answer;
+    });
+
+    async function getAnswerFromOpenAI(question, apiKey) {
+      try {
+        const response = await axios.post('https://api.openai.com/v1/answers', {
+          question,
+          model: 'davinci',
+          max_tokens: 50
+        }, {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        return response;
+      } catch (error) {
+        console.error(error);
+        // Обработка ошибок
+      }
+    }
+  </script>
 </body>
 </html>
