@@ -28,16 +28,20 @@
       const questionInput = document.getElementById('question');
       const question = questionInput.value;
 
-      const response = await getAnswerFromOpenAI(question, apiKey);
+      try {
+        const response = await getAnswerFromOpenAI(question, apiKey);
 
-      answerDiv.textContent = response.data.answer;
+        answerDiv.textContent = response.data.choices[0].text;
+      } catch (error) {
+        console.error(error);
+        // Обработка ошибок
+      }
     });
 
     async function getAnswerFromOpenAI(question, apiKey) {
       try {
-        const response = await axios.post('https://api.openai.com/v1/answers', {
-          question,
-          model: 'davinci',
+        const response = await axios.post('https://api.openai.com/v1/engines/davinci/completions', {
+          prompt: question,
           max_tokens: 50
         }, {
           headers: {
@@ -46,10 +50,9 @@
           }
         });
 
-        return response;
+        return response.data;
       } catch (error) {
-        console.error(error);
-        // Обработка ошибок
+        throw error;
       }
     }
   </script>
